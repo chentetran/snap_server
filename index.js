@@ -25,17 +25,17 @@ app.get('/', function(req, res) {
 // This route is pinged when someone votes to start
 // Takes a userID, gameID
 app.post('/vote', (req, res) => {
-	let userID = req.body.userID;
-	let gameID = req.body.gameID;
+	var userID = req.body.userID;
+	var gameID = req.body.gameID;
 
-	let gameRef = db.ref('/Games/' + gameID).child(gameID);
+	var gameRef = db.ref('/Games/' + gameID).child(gameID);
 
 	// Change status to 1 (aka ready)
 	gameRef.child('players').child(userID).child('status').set("1");
 
 	// Get values numPlayers and numReady
 	gameRef.child('numPlayers').once('value').then(numPlayersSnapshot => {
-		let numPlayers = numPlayersSnapshot.val();
+		var numPlayers = numPlayersSnapshot.val();
 
 		res.send(numPlayers);
 	});
