@@ -34,7 +34,7 @@ app.post('/vote', (req, res) => {
 	gameRef.child('players').child(userID).child('status').set("1");
 
 	// Get values numPlayers and numReady
-	gameRef.child('numPlayers').once('value').then(numPlayersSnapshot => {
+	gameRef.child('numPlayers').once('value', numPlayersSnapshot => {
 		var numPlayers = numPlayersSnapshot.val();
 
 		console.log(numPlayers);
