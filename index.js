@@ -36,7 +36,6 @@ app.post('/vote', function(req, res) {
 	gameRef.once('value').then(function(snapshot) {
 		var numPlayers    = snapshot.val().numPlayers;
 		var numReady      = snapshot.val().numReady;
-		var playersInGame = snapshot.val().players;
 		numReady++;
 
 		gameRef.child("numReady").set(numReady);
@@ -44,29 +43,29 @@ app.post('/vote', function(req, res) {
 		if (numReady / numPlayers > .5) {
 			console.log("[+] Game " + gameID + " is ready to start");
 
-			// Get all players as an array
-			var players = [];
-			// console.log(snapshot.val());
-			playersInGame.forEach(function(snapshot) {
-				console.log(snapshot.val())
-				players.push(snapshot.child('name').val());
+
+			gameRef.child('players').once('value').then(function(snapshot) {
+				// Get all players as an array
+				var players = [];
+				snapshot.forEach(function(snapshot) {
+					console.log(snapshot.val())
+					players.push(snapshot.child('name').val());
+				});
+
+				sattoloCycle(players);
+
+				// Iterate thru players child and assign a target
+				var i = 0;
+				snapshot.forEach(function(snapshot) {
+					snapshot.ref.child('target').set(players[i]);
+					i++;
+				});
+
 			});
-
-			// console.log(players);
-
-			sattoloCycle(players);
-
-			// Iterate thru players child and assign a target
-			var i = 0;
-			playersInGame.forEach(function(snapshot) {
-				snapshot.ref.child('target').set(players[i]);
-				i++;
-			});
-
 		}
 	});
 
-	res.send('cool');
+	res.send('yaas');
 });
 
 function sattoloCycle(items) {
