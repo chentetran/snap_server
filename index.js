@@ -37,8 +37,10 @@ app.post('/vote', (req, res) => {
 	gameRef.child('numPlayers').once('value').then(numPlayersSnapshot => {
 		var numPlayers = numPlayersSnapshot.val();
 
-		res.send(numPlayers);
+		console.log(numPlayers);
 	});
+
+	res.send("cool")
 });
 
 app.listen(app.get('port'), function() {
