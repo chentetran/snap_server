@@ -58,6 +58,7 @@ app.post('/vote', function(req, res) {
 				var i = 0;
 				snapshot.forEach(function(snapshot) {
 					snapshot.ref.child('target').set(players[i]);
+					snapshot.ref.child('status').set("2");
 					i++;
 				});
 
