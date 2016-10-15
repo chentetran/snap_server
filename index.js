@@ -49,7 +49,7 @@ app.post('/vote', function(req, res) {
 				var players = [];
 				snapshot.forEach(function(snapshot) {
 					console.log(snapshot.val())
-					players.push(snapshot.child('name').val());
+					players.push(snapshot.getKey());
 				});
 
 				sattoloCycle(players);
@@ -65,7 +65,7 @@ app.post('/vote', function(req, res) {
 		}
 	});
 
-	res.send('yaas');
+	res.send({'yaas'});
 });
 
 function sattoloCycle(items) {
