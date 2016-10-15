@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Required if we need to use HTTP query or post parameters
 
 app.get('/', function() {
-	console.log("hello")
+	res.send("poop");
 })
 
 app.listen(app.get('port'), function() {
