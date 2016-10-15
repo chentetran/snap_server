@@ -28,7 +28,7 @@ app.post('/vote', (req, res) => {
 	var userID = req.body.userID;
 	var gameID = req.body.gameID;
 
-	var gameRef = db.ref('/Games/' + gameID).child(gameID);
+	var gameRef = db.ref('/Games/' + gameID);
 
 	// Change status to 1 (aka ready)
 	gameRef.child('players').child(userID).child('status').set("1");
