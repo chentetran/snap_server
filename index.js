@@ -65,7 +65,7 @@ app.post('/vote', function(req, res) {
 		}
 	});
 
-	res.send({'yaas'});
+	res.send({'success':'yaas'});
 });
 
 function sattoloCycle(items) {
