@@ -8,7 +8,7 @@ app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Required if we need to use HTTP query or post parameters
 
-app.get('/', function() {
+app.get('/', function(req, res) {
 	res.send("poop");
 })
 
