@@ -8,9 +8,38 @@ app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Required if we need to use HTTP query or post parameters
 
+// Initialize Firebase
+var config = {
+	apiKey: "AIzaSyANDuIa1bygnoQ551DrNI9MpdU64Ey62-o",
+	authDomain: "snap-91990.firebaseapp.com",
+	databaseURL: "https://snap-91990.firebaseio.com",
+};
+firebase.initializeApp(config);
+
+var db = firebase.database();
+
 app.get('/', function(req, res) {
-	res.send("poop");
+	res.send("hooray");
 })
+
+// This route is pinged when someone votes to start
+// Takes a userID, gameID
+app.post('/vote', (req, res) => {
+	let userID = req.body.userID;
+	let gameID = req.body.gameID;
+
+	let gameRef = db.ref('/Games/' + gameID).child(gameID);
+
+	// Change status to 1 (aka ready)
+	gameRef.child('players').child(userID).child('status').set("1");
+
+	// Get values numPlayers and numReady
+	gameRef.child('numPlayers').once('value').then(numPlayersSnapshot => {
+		let numPlayers = numPlayersSnapshot.val();
+
+		res.send(numPlayers);
+	});
+});
 
 app.listen(app.get('port'), function() {
 
