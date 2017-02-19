@@ -31,7 +31,7 @@ app.post('/createGame', function(req, res) {
 
 	if (!gameName || !userID || !name) {
 		// TODO: Send error
-		return;
+		return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 	}
 
 	console.log("**" + name);
