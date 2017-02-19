@@ -31,7 +31,7 @@ app.post('/createGame', function(req, res) {
 	if (!gameName || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 	
 	// To get user's name given userID
-	db.ref("Users/" + id + "/name").once('value', function(snapshot) {
+	db.ref("Users/" + userID + "/name").once('value', function(snapshot) {
 		var name = snapshot.val();
 
 		// Create new item in database's Games branch using default numbers
