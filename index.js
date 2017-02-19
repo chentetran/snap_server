@@ -51,7 +51,7 @@ app.post('/joinGame', function(req, res) {
 					var numPlayers = child.numPlayers;
 					childRef.child('numPlayers').set(numPlayers + 1);
 
-					// Add game to user's games child
+					// Add game to user's "games" child
 					db.ref('Users/' + userID + "/games/" + key).set(gameName);
 
 					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
