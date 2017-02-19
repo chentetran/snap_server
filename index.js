@@ -55,7 +55,7 @@ app.post('/joinGame', function(req, res) {
 					db.ref('Users/' + userID + "/games/" + key).set(gameName);
 
 					return res.send({'success': 'Successfully joined game', 'status': 200});
-					
+
 				}, function(errorObj) {
 					console.log("Error from getNameFromID(). Error is: " + errorObj.code);
 					return res.send({'error': "Couldn't find user's name from userID", 'status': 400});
@@ -86,9 +86,12 @@ app.post('/createGame', function(req, res) {
 			numReady: 0,
 			gameName: gameName,
 			players: {
-				name: name,
-				status: "0"
+				userID: {
+					name: name,
+					status: "0"
+				}
 			}
+			
 		});
 
 		// Add new game to user's list of joined games
