@@ -107,6 +107,8 @@ app.post('/vote', function(req, res) {
 // Returns null if invalid userID or error
 function getNameFromID(id) {
 	db.ref("Users/" + id + "/name").once('value', function(snapshot) {
+		console.log(id)
+		console.log(snapshot)
 		return snapshot.val();
 	}, function(errorObj) {
 		console.log("Error from getNameFromID(). Error is: " + errorObj.code);
