@@ -2,25 +2,76 @@
 var express = require('express');
 var bodyParser = require('body-parser'); // Required if we need to use HTTP query or post parameters
 var firebase = require("firebase");
+var request = require("request");
 var app = express();
 app.set('port', (process.env.PORT || 5000));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // Required if we need to use HTTP query or post parameters
 
+// Kairos API details
+var app_id  = "dba28545";
+var app_key = "cb111b88fb1119f6ad2003c64cc71a14"; 
+
 // Initialize Firebase
 var config = {
 	apiKey: "AIzaSyANDuIa1bygnoQ551DrNI9MpdU64Ey62-o",
 	authDomain: "snap-91990.firebaseapp.com",
 	databaseURL: "https://snap-91990.firebaseio.com",
+	storageBucket: 'gs://snap-91990.appspot.com'
 };
 firebase.initializeApp(config);
 
 var db = firebase.database();
+var storage = firebase.storage();
 
 app.get('/', function(req, res) {
 	res.send("hooray");
 })
+
+app.post('/assassinate', function(req, res) {
+
+});
+
+// Enrolls an image corresponding to the user on the Kairos face database
+// Also inserts URL to user's database entry
+// Takes a URL to an image and userID
+app.post('/calibrate', function(req, res) {
+	var imgUrl = req.body.imgUrl;
+	var userID = req.body.userID;
+
+	if (!imgUrl || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+
+	// Insert URL to user's db entry
+	db.ref('Users/' + userID + '/photoUrl').set(imgUrl); 
+
+	// Enroll to Kairos
+	var formData = {
+		image: imgUrl,
+		subject_id: userID,
+		gallery_name: "snapsassin"
+	};
+
+	request({
+		url: "https://api.kairos.com/enroll",
+		method: "POST",
+		headers: {
+			app_id,
+			app_key
+		},
+		formData
+	}, function(error, response, body) {
+		console.log(body);
+
+		if (body.Errors) {
+			return res.send({'error': body.Errors[0].Message, 'status': 201});
+		}
+
+		else if (body.images) {
+			return res.send({'success': 'Successfully calibrated face', 'status': 200});
+		}
+	});
+});
 
 // Adds user to existing game child
 // Takes a gameName and a userID
