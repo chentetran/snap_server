@@ -36,6 +36,7 @@ app.post('/joinGame', function(req, res) {
 			if (gameName == child.gameName) {
 				var key      = childSnapshot.key;
 				var childRef = childSnapshot.ref;
+				var found 	 = false
 
 				// To get user's name given userID
 				db.ref("Users/" + userID + "/name").once('value', function(snapshot) {
@@ -54,14 +55,17 @@ app.post('/joinGame', function(req, res) {
 					// Add game to user's "games" child
 					db.ref('Users/' + userID + "/games/" + key).set(gameName);
 
+					found = true;
 					return true;		// cancel enumeration of forEach
 
 				});
 
-				return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
+				if (found)
+					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
+				else
+					return res.send({'error': 'No such game with that name', 'status': 401});
 			}
 		});
-		return res.send({'error': 'No such game with that name', 'status': 401})
 	});
 });
 
