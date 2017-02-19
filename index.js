@@ -28,13 +28,13 @@ app.post('/createGame', function(req, res) {
 	var gameName = req.body.gameName;
 	var userID   = req.body.userID;
 	var name 	 = getNameFromID(userID);
+	console.log("**" + name);
 
 	if (!gameName || !userID || !name) {
 		// TODO: Send error
 		return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 	}
 
-	console.log("**" + name);
 
 	// Create new item in database's Games branch using default numbers
 	var newGameRef = db.ref('Games').push();
