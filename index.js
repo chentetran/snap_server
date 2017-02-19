@@ -54,7 +54,7 @@ app.post('/joinGame', function(req, res) {
 					// Add game to user's games child
 					db.ref('Users/' + userID + "/games/" + key).set(gameName);
 
-					return res.send({'success': 'Successfully joined game', 'status': 200});
+					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
 
 				}, function(errorObj) {
 					console.log("Error from getNameFromID(). Error is: " + errorObj.code);
@@ -63,6 +63,7 @@ app.post('/joinGame', function(req, res) {
 
 			}
 		});
+		return res.send({'error': 'No such game with that name', 'status': 401})
 	});
 });
 
@@ -95,7 +96,7 @@ app.post('/createGame', function(req, res) {
 		var key = newGameRef.key;
 		db.ref('Users/' + userID + '/games').child(key).set(gameName);
 
-		return res.send({'success': 'New game created successfully', 'status': 200});
+		return res.send({'success': 'New game created successfully', 'status': 200, 'gameKey': key});
 	
 	}, function(errorObj) {
 		console.log("Error from getNameFromID(). Error is: " + errorObj.code);
