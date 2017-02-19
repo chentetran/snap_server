@@ -27,33 +27,37 @@ app.get('/', function(req, res) {
 app.post('/createGame', function(req, res) {
 	var gameName = req.body.gameName;
 	var userID   = req.body.userID;
-	var name 	 = getNameFromID(userID);
-	console.log("**" + name);
 
-	if (!gameName || !userID || !name) {
-		// TODO: Send error
-		return res.send({'error': 'Missing or invalid arguments', 'status': 400});
-	}
+	if (!gameName || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+	
+	// To get user's name given userID
+	db.ref("Users/" + id + "/name").once('value', function(snapshot) {
+		var name = snapshot.val();
 
+		// Create new item in database's Games branch using default numbers
+		var newGameRef = db.ref('Games').push();
+		newGameRef.set({
+			numDead: 0,
+			numPlayers: 1,
+			numReady: 0,
+			gameName: gameName,
+			players: {
+				name: name,
+				status: "0"
+			}
+		});
 
-	// Create new item in database's Games branch using default numbers
-	var newGameRef = db.ref('Games').push();
-	newGameRef.set({
-		numDead: 0,
-		numPlayers: 1,
-		numReady: 0,
-		gameName: gameName,
-		players: {
-			name: name,
-			status: "0"
-		}
+		// Add new game to user's list of joined games
+		var key = newGameRef.key;
+		db.ref('Users/' + userID + '/games').child(key).set(gameName);
+
+		return res.send({'success': 'New game created successfully', 'status': 200});
+	
+	}, function(errorObj) {
+		console.log("Error from getNameFromID(). Error is: " + errorObj.code);
+		return res.send({'error': "Couldn't find user's name from userID", 'status': 400});
 	});
 
-	// Add new game to user's list of joined games
-	var key = newGameRef.key;
-	db.ref('Users/' + userID + '/games').child(key).set(gameName);
-
-	return res.send({'success': 'New game created successfully', 'status': 200});
 });
 
 // This route is pinged when someone votes to start
