@@ -22,6 +22,50 @@ app.get('/', function(req, res) {
 	res.send("hooray");
 })
 
+// Adds user to existing game child
+// Takes a gameName and a userID
+app.post('/joinGame', function(req, res) {
+	var gameName = req.body.gameName;
+	var userID   = req.body.userID;
+
+	if (!gameName || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+
+	db.ref("Games").once('value', function(snapshot) {
+		snapshot.forEach(function(childSnapshot) {
+			var child = childSnapshot.val();
+			if (gameName == child.gameName) {
+				var key      = childSnapshot.key;
+				var childRef = childSnapshot.ref;
+
+				// To get user's name given userID
+				db.ref("Users/" + userID + "/name").once('value', function(snapshot) {
+					var name = snapshot.val();
+
+					// Add player to game's players child
+					childRef.child('players/' + userID).set({
+						name: name,
+						status: "0"
+					});
+
+					// Increment number of players in game
+					var numPlayers = child.numPlayers;
+					childRef.child('numPlayers').set(numPlayers + 1);
+
+					// Add game to user's games child
+					db.ref('Users/' + userID + "/games/" + key).set(gameName);
+
+					return res.send({'success': 'Successfully joined game', 'status': 200});
+					
+				}, function(errorObj) {
+					console.log("Error from getNameFromID(). Error is: " + errorObj.code);
+					return res.send({'error': "Couldn't find user's name from userID", 'status': 400});
+				});
+
+			}
+		});
+	});
+});
+
 // Creates a new game child in database, also adds game to user's gamesList
 // Takes a gameName and userID
 app.post('/createGame', function(req, res) {
