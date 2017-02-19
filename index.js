@@ -27,13 +27,13 @@ app.get('/', function(req, res) {
 app.post('/createGame', function(req, res) {
 	var gameName = req.body.gameName;
 	var userID   = req.body.userID;
+	var name 	 = getNameFromID(userID);
 
-	if (!gameName || !userID) {
+	if (!gameName || !userID || !name) {
 		// TODO: Send error
 		return;
 	}
 
-	var name 	 = getNameFromID(userID);
 	console.log("**" + name);
 
 	// Create new item in database's Games branch using default numbers
@@ -108,7 +108,7 @@ app.post('/vote', function(req, res) {
 function getNameFromID(id) {
 	db.ref("Users/" + id + "/name").once('value', function(snapshot) {
 		console.log(id)
-		console.log(snapshot)
+		console.log(snapshot.val())
 		return snapshot.val();
 	}, function(errorObj) {
 		console.log("Error from getNameFromID(). Error is: " + errorObj.code);
