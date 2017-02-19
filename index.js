@@ -22,13 +22,47 @@ app.get('/', function(req, res) {
 	res.send("hooray");
 })
 
+// Creates a new game child in database, also adds game to user's gamesList
+// Takes a gameName, gameID, userID
+app.post('/createGame', function(req, res) {
+	var gameName = req.body.gameName;
+	var gameID   = req.body.gameID;
+	var userID   = req.body.userID;
+
+	if (!gameName || !gameID || !userID) {
+		// TODO: Send error
+		return;
+	}
+
+	var name 	 = getNameFromID(userID);
+
+	// Create new item in database's Games branch using default numbers
+	var newGameRef = db.ref('Games').push();
+	newGameRef.set({
+		numDead: 0,
+		numPlayers: 1,
+		numReady: 0,
+		gameName: gameName,
+		players: {
+			name: name,
+			status: "0"
+		}
+	});
+
+	// Add new game to user's list of joined games
+	var key = newGameRef.key;
+	db.ref('Users/' + userID + "/games/" + key).set(gameName);
+
+	return res.send({'success': 'New game created successfully', 'status': 200});
+});
+
 // This route is pinged when someone votes to start
 // Takes a userID, gameID
 app.post('/vote', function(req, res) {
 	var userID = req.body.userID;
 	var gameID = req.body.gameID;
 
-	var gameRef = db.ref('/Games/' + gameID);
+	var gameRef = db.ref('Games/' + gameID);
 
 	// Change status to 1 (aka ready)
 	gameRef.child('players').child(userID).child('status').set("1");
@@ -68,6 +102,17 @@ app.post('/vote', function(req, res) {
 
 	res.send({'success':'yaas'});
 });
+
+// Takes a userID and returns their name
+// Returns null if invalid userID or error
+function getNameFromID(id) {
+	db.ref("Users/" + id + "/name").once('value', function(snapshot) {
+		return snapshot.val();
+	}, function(errorObj) {
+		console.log("Error from getNameFromID(). Error is: " + errorObj.code);
+		return null;
+	});
+}
 
 function sattoloCycle(items) {
   for(var i = items.length; i-- > 1; ) {
