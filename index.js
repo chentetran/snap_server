@@ -23,18 +23,18 @@ app.get('/', function(req, res) {
 })
 
 // Creates a new game child in database, also adds game to user's gamesList
-// Takes a gameName, gameID, userID
+// Takes a gameName and userID
 app.post('/createGame', function(req, res) {
 	var gameName = req.body.gameName;
-	var gameID   = req.body.gameID;
 	var userID   = req.body.userID;
 
-	if (!gameName || !gameID || !userID) {
+	if (!gameName || !userID) {
 		// TODO: Send error
 		return;
 	}
 
 	var name 	 = getNameFromID(userID);
+	console.log("**" + name);
 
 	// Create new item in database's Games branch using default numbers
 	var newGameRef = db.ref('Games').push();
@@ -51,7 +51,7 @@ app.post('/createGame', function(req, res) {
 
 	// Add new game to user's list of joined games
 	var key = newGameRef.key;
-	db.ref('Users/' + userID + "/games/" + key).set(gameName);
+	db.ref('Users/' + userID + '/games').child(key).set(gameName);
 
 	return res.send({'success': 'New game created successfully', 'status': 200});
 });
