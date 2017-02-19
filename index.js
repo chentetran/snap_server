@@ -54,13 +54,11 @@ app.post('/joinGame', function(req, res) {
 					// Add game to user's "games" child
 					db.ref('Users/' + userID + "/games/" + key).set(gameName);
 
-					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
+					return true;		// cancel enumeration of forEach
 
-				}, function(errorObj) {
-					console.log("Error from getNameFromID(). Error is: " + errorObj.code);
-					return res.send({'error': "Couldn't find user's name from userID", 'status': 400});
 				});
 
+				return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
 			}
 		});
 		return res.send({'error': 'No such game with that name', 'status': 401})
