@@ -85,13 +85,10 @@ app.post('/createGame', function(req, res) {
 			numPlayers: 1,
 			numReady: 0,
 			gameName: gameName,
-			players: {
-				userID: {
-					name: name,
-					status: "0"
-				}
-			}
-			
+		});
+		newGameRef.child('players/' + userID).set({
+			name,
+			status: "0"
 		});
 
 		// Add new game to user's list of joined games
