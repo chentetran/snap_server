@@ -29,8 +29,69 @@ app.get('/', function(req, res) {
 	res.send("hooray");
 })
 
+// Attempts assassination using Kairos face verification feature
+// Puts photo in game's history child in database
+// If successful, eliminates target from game and assigns user a new target
+// Also checks if user is winner
+// Takes a userID, a targetID, and an imgUrl
 app.post('/assassinate', function(req, res) {
+	var imgUrl   = req.body.imgUrl;
+	var userID   = req.body.userID;
+	var gameKey  = req.body.gameKey;
 
+	if (!imgUrl || !userID || !gameKey) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+
+
+	var gameRef = db.ref('Games/' + gameKey);
+
+	gameRef.once('value', function(snapshot) {
+		var targetID = snapshot.child('players/' + id + '/target').val();
+
+		// Call to Kairos' face verification
+		var formData = {
+			image: imgUrl,
+			subject_id: targetID,
+			gallery_name: "snapsassin"
+		}
+		request({
+			url: "https://api.kairos.com/verify",
+			method: "POST",
+			headers: {
+				app_id,
+				app_key
+			},
+			formData
+		}, function(error, response, body) {
+			console.log(body);
+
+			if (body.Errors) {
+				return res.send({'error': body.Errors[0].Message, 'status': 201});
+			}
+
+			else if (body.images) {							// Assassination successful
+			
+				// Increment numDead
+				var numDead = snapshot.child("numDead").val() + 1;
+				gameRef.child('numDead').set(numDead);
+
+				// Change victim's status code
+				gameRef.child('players/' + targetID + "/status").set("3");
+
+				// Assign victim's target to user
+				var newTargetID = snapshot.child('players/' + targetID + '/target').val();
+				gameRef.child('players/' + userID + '/target').set(newTargetID);
+
+				// Adds url to game's history of successful assassinations
+				gameRef.child('assassinations/' + targetID).set(imgUrl);
+
+				if (newTargetID == userID) {				// If new target is self, user has won
+					return res.send({'success': 'You won!', 'status': 202});
+				} else {
+					return res.send({'success': 'Successfully assassinated target', 'status': 200});
+				}
+			}
+		});
+	});
 });
 
 // Enrolls an image corresponding to the user on the Kairos face database
