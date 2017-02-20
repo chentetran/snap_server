@@ -109,9 +109,9 @@ app.post('/calibrate', function(req, res) {
 
 	// Enroll to Kairos
 	var data = {
-		image: imgUrl,
-		subject_id: userID,
-		gallery_name: "snapsassin"
+		"image": imgUrl,
+		"subject_id": userID,
+		"gallery_name": "snapsassin"
 	};
 
 	request({
@@ -120,8 +120,8 @@ app.post('/calibrate', function(req, res) {
 		json: true,
 		headers: {
 			"Content-Type": "application/json",
-			app_id,
-			app_key
+			"app_id": app_id,
+			"app_key": app_key
 		},
 		body: JSON.stringify(data)
 	}, function(error, response, body) {
