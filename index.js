@@ -245,11 +245,12 @@ app.post('/vote', function(req, res) {
 
 		if (numPlayers == 1) {
 			return res.send({'error': 'You cannot start the game with one player', 'status': 405})
+		} else {
+			gameRef.child("numReady").set(numReady);
 		}
 
-		gameRef.child("numReady").set(numReady);
 
-		if (numReady / numPlayers > .5) {
+		if (numReady / numPlayers > .5 && numPlayers != 1) {
 			console.log("[+] Game " + gameID + " is ready to start");
 
 			gameRef.child('players').once('value').then(function(snapshot) {
