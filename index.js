@@ -33,7 +33,7 @@ app.get('/', function(req, res) {
 // Puts photo in game's history child in database
 // If successful, eliminates target from game and assigns user a new target
 // Also checks if user is winner
-// Takes a userID, a targetID, and an imgUrl
+// Takes a userID, a gameKey, and an imgUrl
 app.post('/assassinate', function(req, res) {
 	var imgUrl   = req.body.imgUrl;
 	var userID   = req.body.userID;
@@ -45,7 +45,7 @@ app.post('/assassinate', function(req, res) {
 	var gameRef = db.ref('Games/' + gameKey);
 
 	gameRef.once('value', function(snapshot) {
-		var targetID = snapshot.child('players/' + id + '/target').val();
+		var targetID = snapshot.child('players/' + userID + '/target').val();
 
 		// Call to Kairos' face verification
 		var data = {
@@ -62,7 +62,7 @@ app.post('/assassinate', function(req, res) {
 				app_id,
 				app_key
 			},
-			body: JSON.stringify(data)
+			body: data
 		}, function(error, response, body) {
 			console.log(body);
 
