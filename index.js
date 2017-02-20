@@ -123,7 +123,7 @@ app.post('/calibrate', function(req, res) {
 			"app_id": app_id,
 			"app_key": app_key
 		},
-		body: JSON.stringify(data)
+		body: data
 	}, function(error, response, body) {
 		console.log(body);
 
