@@ -246,6 +246,7 @@ app.post('/vote', function(req, res) {
 		gameRef.child("numReady").set(numReady);
 			console.log("numplayers is " + numPlayers)
 		if (numPlayers == 1) {
+			console.log("inhere!")
 			return res.send({'error': 'You cannot start the game with one player', 'status': 405})
 		}
 		else if (numReady / numPlayers > .5) {
