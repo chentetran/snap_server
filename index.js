@@ -48,7 +48,7 @@ app.post('/assassinate', function(req, res) {
 		var targetID = snapshot.child('players/' + id + '/target').val();
 
 		// Call to Kairos' face verification
-		var formData = {
+		var data = {
 			image: imgUrl,
 			subject_id: targetID,
 			gallery_name: "snapsassin"
@@ -56,11 +56,13 @@ app.post('/assassinate', function(req, res) {
 		request({
 			url: "https://api.kairos.com/verify",
 			method: "POST",
+			json: true,
 			headers: {
+				"content-type": "application/json",
 				app_id,
 				app_key
 			},
-			formData
+			body: JSON.stringify(data)
 		}, function(error, response, body) {
 			console.log(body);
 
@@ -106,7 +108,7 @@ app.post('/calibrate', function(req, res) {
 	db.ref('Users/' + userID + '/photoUrl').set(imgUrl); 
 
 	// Enroll to Kairos
-	var formData = {
+	var data = {
 		image: imgUrl,
 		subject_id: userID,
 		gallery_name: "snapsassin"
@@ -115,20 +117,27 @@ app.post('/calibrate', function(req, res) {
 	request({
 		url: "https://api.kairos.com/enroll",
 		method: "POST",
+		json: true,
 		headers: {
+			"content-type": "application/json",
 			app_id,
 			app_key
 		},
-		formData
+		body: JSON.stringify(data)
 	}, function(error, response, body) {
 		console.log(body);
 
 		if (body.Errors) {
+			console.log("this is true");
 			return res.send({'error': body.Errors[0].Message, 'status': 201});
 		}
 
 		else if (body.images) {
 			return res.send({'success': 'Successfully calibrated face', 'status': 200});
+		}
+
+		else {
+			return res.send({'error': 'Something went wrong with Kairos', 'status': 201})
 		}
 	});
 });
