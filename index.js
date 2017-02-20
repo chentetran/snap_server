@@ -18,12 +18,12 @@ var config = {
 	apiKey: "AIzaSyANDuIa1bygnoQ551DrNI9MpdU64Ey62-o",
 	authDomain: "snap-91990.firebaseapp.com",
 	databaseURL: "https://snap-91990.firebaseio.com",
-	storageBucket: 'gs://snap-91990.appspot.com'
+	// storageBucket: 'gs://snap-91990.appspot.com'
 };
 firebase.initializeApp(config);
 
 var db = firebase.database();
-var storage = firebase.storage();
+// var storage = firebase.storage();
 
 app.get('/', function(req, res) {
 	res.send("hooray");
@@ -69,7 +69,6 @@ app.post('/assassinate', function(req, res) {
 			}
 
 			else if (body.images) {							// Assassination successful
-			
 				// Increment numDead
 				var numDead = snapshot.child("numDead").val() + 1;
 				gameRef.child('numDead').set(numDead);
