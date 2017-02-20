@@ -46,7 +46,9 @@ app.post('/assassinate', function(req, res) {
 
 	gameRef.once('value', function(snapshot) {
 		var targetID = snapshot.child('players/' + userID + '/target').val();
-
+		var name = snapshot.child('players/' + userID + '/name').val();
+		var targetName = snapshot.child('players/' + targetID + '/name').val
+		var date = new Date();
 		// Call to Kairos' face verification
 		var data = {
 			image: imgUrl,
@@ -84,6 +86,9 @@ app.post('/assassinate', function(req, res) {
 
 				// Adds url to game's history of successful assassinations
 				gameRef.child('assassinations/' + targetID).set(imgUrl);
+
+				// Post to feed
+				gameRef.child('feed').push().set(name + " assassinated " + targetName + ". (" + date + ")");
 
 				if (newTargetID == userID) {				// If new target is self, user has won
 					gameRef.child('players/' + userID + '/status').set("4"); 	// Set as winner
@@ -147,6 +152,7 @@ app.post('/calibrate', function(req, res) {
 app.post('/joinGame', function(req, res) {
 	var gameName = req.body.gameName;
 	var userID   = req.body.userID;
+	var date = new Date();
 
 	if (!gameName || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 
@@ -157,10 +163,11 @@ app.post('/joinGame', function(req, res) {
 				var key      = childSnapshot.key;
 				var childRef = childSnapshot.ref;
 				var found 	 = false
+				var name;
 
 				// To get user's name given userID
 				db.ref("Users/" + userID + "/name").once('value', function(snapshot) {
-					var name = snapshot.val();
+					name = snapshot.val();
 
 					// Add player to game's players child
 					childRef.child('players/' + userID).set({
@@ -180,8 +187,10 @@ app.post('/joinGame', function(req, res) {
 
 				});
 
-				if (found)
+				if (found) {
+					db.ref('Games/' + key + '/feed').push().set(name + " joined the game. (" + date + ")");
 					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
+				}
 				else
 					return res.send({'error': 'No such game with that name', 'status': 401});
 			}
@@ -194,6 +203,7 @@ app.post('/joinGame', function(req, res) {
 app.post('/createGame', function(req, res) {
 	var gameName = req.body.gameName;
 	var userID   = req.body.userID;
+	var date = new Date();
 
 	if (!gameName || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 	
@@ -218,6 +228,9 @@ app.post('/createGame', function(req, res) {
 		var key = newGameRef.key;
 		db.ref('Users/' + userID + '/games').child(key).set(gameName);
 
+		// Add to feed
+		newGameRef.child("feed").push().set("Game was created on " + date);
+
 		return res.send({'success': 'New game created successfully', 'status': 200, 'gameKey': key});
 	
 	}, function(errorObj) {
@@ -232,8 +245,8 @@ app.post('/createGame', function(req, res) {
 app.post('/vote', function(req, res) {
 	var userID = req.body.userID;
 	var gameID = req.body.gameID;
-
 	var gameRef = db.ref('Games/' + gameID);
+	var date = new Date();
 
 	// Change status to 1 (aka ready)
 	gameRef.child('players').child(userID).child('status').set("1");
@@ -247,8 +260,10 @@ app.post('/vote', function(req, res) {
 			return res.send({'error': 'You cannot start the game with one player', 'status': 405})
 		} else {
 			gameRef.child("numReady").set(numReady);
-		}
 
+			var name = snapshot.child('players/' + userID + '/name').val();; 
+			gameRef.child("feed").push().set(name + " voted to start. (" + date + ")");
+		}
 
 		if (numReady / numPlayers > .5 && numPlayers != 1) {
 			console.log("[+] Game " + gameID + " is ready to start");
@@ -270,8 +285,9 @@ app.post('/vote', function(req, res) {
 					snapshot.ref.child('status').set("2");
 					i++;
 				});
-
 			});
+
+			gameRef.child("feed").push().set("Game has started! (" + date + ")");
 
 			return res.send({'success':'yaas', 'status': 200});
 		}
