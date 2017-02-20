@@ -58,7 +58,7 @@ app.post('/assassinate', function(req, res) {
 			method: "POST",
 			json: true,
 			headers: {
-				"content-type": "application/json",
+				"Content-Type": "application/json",
 				app_id,
 				app_key
 			},
@@ -119,7 +119,7 @@ app.post('/calibrate', function(req, res) {
 		method: "POST",
 		json: true,
 		headers: {
-			"content-type": "application/json",
+			"Content-Type": "application/json",
 			app_id,
 			app_key
 		},
@@ -128,7 +128,6 @@ app.post('/calibrate', function(req, res) {
 		console.log(body);
 
 		if (body.Errors) {
-			console.log("this is true");
 			return res.send({'error': body.Errors[0].Message, 'status': 201});
 		}
 
