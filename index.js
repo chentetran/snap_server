@@ -243,13 +243,13 @@ app.post('/vote', function(req, res) {
 		var numReady      = snapshot.val().numReady;
 		numReady++;
 
-		gameRef.child("numReady").set(numReady);
-			console.log("numplayers is " + numPlayers)
 		if (numPlayers == 1) {
-			console.log("inhere!")
 			return res.send({'error': 'You cannot start the game with one player', 'status': 405})
 		}
-		else if (numReady / numPlayers > .5) {
+
+		gameRef.child("numReady").set(numReady);
+
+		if (numReady / numPlayers > .5) {
 			console.log("[+] Game " + gameID + " is ready to start");
 
 			gameRef.child('players').once('value').then(function(snapshot) {
