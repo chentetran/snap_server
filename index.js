@@ -86,6 +86,7 @@ app.post('/assassinate', function(req, res) {
 				gameRef.child('assassinations/' + targetID).set(imgUrl);
 
 				if (newTargetID == userID) {				// If new target is self, user has won
+					gameRef.child('players/' + userID + '/status').set("4"); 	// Set as winner
 					return res.send({'success': 'You won!', 'status': 202});
 				} else {
 					return res.send({'success': 'Successfully assassinated target', 'status': 200});
@@ -245,6 +246,10 @@ app.post('/vote', function(req, res) {
 		gameRef.child("numReady").set(numReady);
 
 		if (numReady / numPlayers > .5) {
+			if (numPlayers == 1) {
+				return res.send({'error': 'You cannot start the game with one player', 'status': 405})
+			}
+
 			console.log("[+] Game " + gameID + " is ready to start");
 
 
@@ -270,7 +275,7 @@ app.post('/vote', function(req, res) {
 		}
 	});
 
-	res.send({'success':'yaas'});
+	res.send({'success':'yaas', 'status': 200});
 });
 
 // Takes a userID and returns their name
