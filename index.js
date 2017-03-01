@@ -199,6 +199,25 @@ app.post('/joinGame', function(req, res) {
 	});
 });
 
+// Takes an id and name to check if user is in the db or not
+// Used for onboarding process
+app.post('/onboard', function(req, res) {
+	var userID = req.body.userID;
+	var name   = req.body.name;
+
+	if (!name || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+
+	var userRef = db.ref("Users/" + userID)
+	userRef.once('value', function(snapshot) {
+		if (snapshot == null) {
+			userRef.child('name').set({ name });
+			return res.send({'success': 'Onboarding complete', 'status': 200});
+		} else {
+			return res.send({'success': 'User exists', 'status': 201});
+		}
+	});
+});
+
 // Creates a new game child in database, also adds game to user's gamesList
 // Takes a gameName and userID
 app.post('/createGame', function(req, res) {
