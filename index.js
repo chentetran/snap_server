@@ -211,13 +211,13 @@ app.post('/onboard', function(req, res) {
 	var userRef = db.ref("Users/" + userID)
 	userRef.once('value', function(snapshot) {
 		console.log(snapshot);
-		if (snapshot == null) {
+		if (snapshot != null && snapshot.hasChild('name')) {
+			console.log('[*] ' + name + ' (' + userID + ') logged in.');
+			return res.send({'success': 'User exists', 'status': 201});
+		} else {
 			userRef.child('name').set({ name });
 			console.log('[*] ' + name + ' (' + userID + ') onboarded.');
 			return res.send({'success': 'Onboarding complete', 'status': 200});
-		} else {
-			console.log('[*] ' + name + ' (' + userID + ') logged in.');
-			return res.send({'success': 'User exists', 'status': 201});
 		}
 	});
 });
