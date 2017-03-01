@@ -27,7 +27,7 @@ var db = firebase.database();
 
 app.get('/', function(req, res) {
 	res.send("hooray");
-})
+});
 
 // Attempts assassination using Kairos face verification feature
 // Puts photo in game's history child in database
@@ -110,9 +110,6 @@ app.post('/calibrate', function(req, res) {
 
 	if (!imgUrl || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 
-	// Insert URL to user's db entry
-	db.ref('Users/' + userID + '/photoUrl').set(imgUrl); 
-
 	// Enroll to Kairos
 	var data = {
 		"image": imgUrl,
@@ -138,7 +135,11 @@ app.post('/calibrate', function(req, res) {
 		}
 
 		else if (body.images) {
+			// Insert URL to user's db entry
+			db.ref('Users/' + userID + '/photoUrl').set(imgUrl); 
+			
 			return res.send({'success': 'Successfully calibrated face', 'status': 200});
+
 		}
 
 		else {
