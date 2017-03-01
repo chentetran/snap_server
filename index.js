@@ -207,12 +207,15 @@ app.post('/onboard', function(req, res) {
 
 	if (!name || !userID) return res.send({'error': 'Missing or invalid arguments', 'status': 400});
 
+
 	var userRef = db.ref("Users/" + userID)
 	userRef.once('value', function(snapshot) {
 		if (snapshot == null) {
 			userRef.child('name').set({ name });
+			console.log('[*] User ' + name + '(' + userID + ') onboarded.');
 			return res.send({'success': 'Onboarding complete', 'status': 200});
 		} else {
+			console.log('[*] User ' + name + '(' + userID + ') logged in.');
 			return res.send({'success': 'User exists', 'status': 201});
 		}
 	});
