@@ -215,7 +215,7 @@ app.post('/onboard', function(req, res) {
 			console.log('[*] ' + name + ' (' + userID + ') logged in.');
 			return res.send({'success': 'User exists', 'status': 201});
 		} else {
-			userRef.child('name').set({ name });
+			userRef.set({ name });
 			console.log('[*] ' + name + ' (' + userID + ') onboarded.');
 			return res.send({'success': 'Onboarding complete', 'status': 200});
 		}
