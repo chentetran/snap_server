@@ -272,6 +272,10 @@ app.post('/vote', function(req, res) {
 	var gameRef = db.ref('Games/' + gameID);
 	var date = new Date();
 
+	if (!userID || !gameID) {
+		return res.send({'error': 'Missing or invalid arguments', 'status': 400});
+	}
+
 	// Change status to 1 (aka ready)
 	gameRef.child('players').child(userID).child('status').set("1");
 
