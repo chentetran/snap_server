@@ -240,7 +240,7 @@ app.post('/createGame', function(req, res) {
 			var name = snapshot.val();
 
 			// Create new item in database's Games branch using default numbers
-			var newGameRef = db.ref('Games').child('gameName');
+			var newGameRef = db.ref('Games').child(gameName);
 			newGameRef.set({
 				numDead: 0,
 				numPlayers: 1,
@@ -253,8 +253,7 @@ app.post('/createGame', function(req, res) {
 			});
 
 			// Add new game to user's list of joined games
-			var key = newGameRef.key;
-			db.ref('Users/' + userID + '/games').child(key).set(gameName);
+			db.ref('Users/' + userID + '/games').child(gameName).set("0");
 
 			// Add to feed
 			newGameRef.child("feed").push().set({item: "Game was created.", date: date.toString()});
