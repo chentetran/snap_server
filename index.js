@@ -258,7 +258,7 @@ app.post('/createGame', function(req, res) {
 			// Add to feed
 			newGameRef.child("feed").push().set({item: "Game was created.", date: date.toString()});
 
-			return res.send({'success': 'New game created successfully', 'status': 200, 'gameKey': key});
+			return res.send({'success': 'New game created successfully', 'status': 200});
 		
 		}, function(errorObj) {
 			console.log("Error from getNameFromID(). Error is: " + errorObj.code);
