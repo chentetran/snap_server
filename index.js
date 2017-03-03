@@ -89,7 +89,7 @@ app.post('/assassinate', function(req, res) {
 				gameRef.child('assassinations/' + targetID).set(imgUrl);
 
 				// Post to feed
-				gameRef.child('feed').push().set(name + " assassinated " + targetName + ". (" + date + ")");
+				gameRef.child('feed').push().set({item: name + " assassinated " + targetName + ".", date: date.toString()});
 
 				if (newTargetID == userID) {				// If new target is self, user has won
 					gameRef.child('players/' + userID + '/status').set("4"); 	// Set as winner
@@ -190,7 +190,7 @@ app.post('/joinGame', function(req, res) {
 				});
 
 				if (found) {
-					db.ref('Games/' + key + '/feed').push().set(name + " joined the game. (" + date + ")");
+					db.ref('Games/' + key + '/feed').push().set({item: name + " joined the game.", date: date.toString()});
 					return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
 				}
 				else
@@ -254,7 +254,7 @@ app.post('/createGame', function(req, res) {
 		db.ref('Users/' + userID + '/games').child(key).set(gameName);
 
 		// Add to feed
-		newGameRef.child("feed").push().set({item: "Game was created", date: date.toString()});
+		newGameRef.child("feed").push().set({item: "Game was created.", date: date.toString()});
 
 		return res.send({'success': 'New game created successfully', 'status': 200, 'gameKey': key});
 	
@@ -291,7 +291,7 @@ app.post('/vote', function(req, res) {
 			gameRef.child("numReady").set(numReady);
 
 			var name = snapshot.child('players/' + userID + '/name').val();; 
-			gameRef.child("feed").push().set(name + " voted to start. (" + date + ")");
+			gameRef.child("feed").push().set({item: name + " voted to start.", date: date.toString()});
 		}
 
 		if (numReady / numPlayers > .5 && numPlayers != 1) {
