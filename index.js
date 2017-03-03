@@ -174,8 +174,12 @@ app.post('/joinGame', function(req, res) {
 		}
 
 		// To get user's name given userID
-		db.ref("Users/" + userID + "/name").once('value', function(childSnapshot) {
-			name = childSnapshot.val();
+		db.ref("Users/" + userID).once('value', function(childSnapshot) {
+			name = childSnapshot.child('name').val();
+
+			if (childSnapshot.child('games').hasChild(gameName)) {
+				return res.send({'error': "You're already in this game", 'status': 401});
+			}
 
 			// Add player to game's players child
 			gameRef.child('players/' + userID).set({
