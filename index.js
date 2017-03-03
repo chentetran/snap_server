@@ -254,7 +254,7 @@ app.post('/createGame', function(req, res) {
 		db.ref('Users/' + userID + '/games').child(key).set(gameName);
 
 		// Add to feed
-		newGameRef.child("feed").push().set("Game was created on " + date);
+		newGameRef.child("feed").push().set({item: "Game was created", date: date});
 
 		return res.send({'success': 'New game created successfully', 'status': 200, 'gameKey': key});
 	
