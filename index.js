@@ -47,9 +47,9 @@ app.post('/assassinate', function(req, res) {
 	gameRef.once('value', function(snapshot) {
 		var targetID = snapshot.child('players/' + userID + '/target').val();
 		var name = snapshot.child('players/' + userID + '/name').val();
-		var targetName = snapshot.child('players/' + targetID + '/name').val
+		var targetName = snapshot.child('players/' + targetID + '/name').val();
 		var date = new Date();
-		console.log(targetID);
+		
 		// Call to Kairos' face verification
 		var data = {
 			image: imgUrl,
