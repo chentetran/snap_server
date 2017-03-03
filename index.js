@@ -285,13 +285,14 @@ app.post('/vote', function(req, res) {
 		var numReady      = snapshot.val().numReady;
 		numReady++;
 
+		gameRef.child("feed").push().set({item: name + " voted to start.", date: date.toString()});
+
 		if (numPlayers == 1) {
 			return res.send({'error': 'You cannot start the game with one player', 'status': 405})
 		} else {
 			gameRef.child("numReady").set(numReady);
 
 			var name = snapshot.child('players/' + userID + '/name').val();; 
-			gameRef.child("feed").push().set({item: name + " voted to start.", date: date.toString()});
 		}
 
 		if (numReady / numPlayers > .5 && numPlayers != 1) {
