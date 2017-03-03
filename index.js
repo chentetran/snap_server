@@ -93,6 +93,10 @@ app.post('/assassinate', function(req, res) {
 
 				if (newTargetID == userID) {				// If new target is self, user has won
 					gameRef.child('players/' + userID + '/status').set("4"); 	// Set as winner
+					
+					// Post to feed
+					gameRef.child('feed').push().set({item: name + " is the winner!", date: date.toString()});
+					
 					return res.send({'success': 'You won!', 'status': 202});
 				} else {
 					return res.send({'success': 'Successfully assassinated target', 'status': 200});
