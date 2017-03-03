@@ -194,6 +194,7 @@ app.post('/joinGame', function(req, res) {
 			db.ref('Games/' + key + '/feed').push().set({item: name + " joined the game.", date: date.toString()});
 			
 			return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
+		});
 	});
 });
 
