@@ -191,7 +191,7 @@ app.post('/joinGame', function(req, res) {
 			db.ref('Users/' + userID + "/games/" + gameName).set('0');
 
 			// Add to feed
-			db.ref('Games/' + key + '/feed').push().set({item: name + " joined the game.", date: date.toString()});
+			db.ref('Games/' + gameName + '/feed').push().set({item: name + " joined the game.", date: date.toString()});
 			
 			return res.send({'success': 'Successfully joined game', 'status': 200, 'gameKey': key});
 		});
