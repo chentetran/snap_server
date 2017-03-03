@@ -314,7 +314,7 @@ app.post('/vote', function(req, res) {
 				});
 			});
 
-			gameRef.child("feed").push().set("Game has started! (" + date + ")");
+			gameRef.child("feed").push().set({item: "Game has started!", date: date.toString()});
 
 			return res.send({'success':'yaas', 'status': 200});
 		}
