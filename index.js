@@ -45,10 +45,17 @@ app.post('/assassinate', function(req, res) {
 	var gameRef = db.ref('Games/' + gameKey);
 
 	gameRef.once('value', function(snapshot) {
+		// If no target, assassination is invalid
+		if (!snapshot.child('players/' + userID + '/target').exists()) {
+			return res.send({'error': 'You do not have a target', 'status': 401});
+		}
+
+
 		var targetID = snapshot.child('players/' + userID + '/target').val();
 		var name = snapshot.child('players/' + userID + '/name').val();
 		var targetName = snapshot.child('players/' + targetID + '/name').val();
 		var date = new Date();
+
 		
 		// Call to Kairos' face verification
 		var data = {
@@ -80,6 +87,7 @@ app.post('/assassinate', function(req, res) {
 
 				// Change victim's status code
 				gameRef.child('players/' + targetID + "/status").set("3");
+				gameRef.child('players/' + targetID + "/target").set(null);
 				db.ref('Users/' + targetID + '/games/' + gameKey).set('3');
 
 				// Assign victim's target to user
